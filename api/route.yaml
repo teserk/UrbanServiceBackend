@@ -1,0 +1,92 @@
+openapi: 3.0.0
+info:
+  title: Сервис поиска маршрутов API
+  version: 1.0.0
+
+paths:
+  /addHouse:
+    post:
+      summary: Добавить новый дом
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                longitude:
+                  type: number
+                  format: double
+                  description: Долгота дома
+                latitude:
+                  type: number
+                  format: double
+                  description: Широта дома
+      responses:
+        '200':
+          description: Успешное выполнение запроса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  houseId:
+                    type: string
+                    description: Уникальный идентификатор только что добавленного дома
+  /addStreet:
+    get:
+      summary: Добавить новую улицу
+      parameters:
+        - name: from
+          in: query
+          description: ID дома, от которого начинается улица
+          required: true
+          schema:
+            type: string
+        - name: to
+          in: query
+          description: ID дома, на котором заканчивается улица
+          required: true
+          schema:
+            type: string
+        - name: length
+          in: query
+          description: Длина улицы в метрах
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Успешное выполнение запроса
+  /findRoute:
+    get:
+      summary: Найти кратчайший маршрут между двумя домами
+      parameters:
+        - name: fromHouseId
+          in: query
+          description: ID начального дома
+          required: true
+          schema:
+            type: string
+        - name: toHouseId
+          in: query
+          description: ID целевого дома
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное выполнение запроса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  routeExists:
+                    type: boolean
+                    description: Индикатор наличия маршрута между домами
+                  streets:
+                    type: array
+                    items:
+                      type: string
+                    description: Список идентификаторов улиц, по которым нужно пройти для достижения целевого дома. Пусто, если маршрут не существует.

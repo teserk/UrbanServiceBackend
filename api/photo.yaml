@@ -1,0 +1,61 @@
+openapi: 3.0.0
+info:
+  title: Photo Upload Service
+  version: 1.0.0
+  description: API для загрузки и получения фотографий домов или перекрестков.
+paths:
+  /uploadPhoto:
+    post:
+      summary: Загрузить фотографию
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nodeId:
+                  type: string
+                  format: uuid
+                  description: Идентификатор узла (дома или перекрестка)
+                photo:
+                  type: string
+                  format: binary
+                  description: Фотография в формате JPEG до 10 Мбайт
+      responses:
+        '200':
+          description: Успешная загрузка
+        '400':
+          description: Неверный формат или превышен размер файла
+        '415':
+          description: Неподдерживаемый медиа-формат
+
+  /photos/{nodeId}:
+    get:
+      summary: Получить фотографию по идентификатору узла
+      parameters:
+        - in: path
+          name: nodeId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Идентификатор узла (дома или перекрестка)
+      responses:
+        '200':
+          description: Успешное получение изображения
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Фотография не найдена
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
